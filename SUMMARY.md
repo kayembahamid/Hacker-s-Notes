@@ -469,3 +469,4 @@
 * [Random | Pentest Book](tools/random-or-pentest-book.md)
 * [Master assessment mindmaps | Pentest Book](tools/master-assessment-mindmaps-or-pentest-book.md)
 * [BugBounty | Pentest Book](tools/bugbounty-or-pentest-book.md)
+* [Red Team Tools](tools/red-team-tools.md)
