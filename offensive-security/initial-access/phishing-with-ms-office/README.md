@@ -1,2 +1,2 @@
-# Phishing with MS Office
+# phishing-with-ms-office
 

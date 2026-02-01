@@ -1,0 +1,73 @@
+---
+description: >-
+  Concealing attacking hosts through with redirectors/traffic forwarders using
+  iptables or socat
+---
+
+# HTTP Forwarders / Relays
+
+### Purpose
+
+Re-directors or traffic forwarders are essentially proxies between the red teaming server (say the one for sending phishing emails or a C2) and the victim - `victim <> re-director <> team server`
+
+The purpose of the re-director host is as usual:
+
+* Obscure the red teaming server by concealing its IP address. In other words - the victim will see traffic coming from the re-director host rather than the team server.
+* If incident responders detect suspicious activity originating from the redirector, it can be "easily" decommissioned and replaced with another one, which is "easier" than rebuilding the team server.
+
+### HTTP Forwarding with iptables
+
+I will explore simple HTTP forwarders which are just that - they simply listen on a given interface and port and forward all the traffic they receive on that port, to a listener port on the team server.
+
+My environment in this lab:
+
+* Team server and a listening port: `10.0.0.2:80`
+* Re-director host and a listening port: `10.0.0.5:80`
+* Victim host: `10.0.0.11`
+
+An easy way to create an HTTP re-director is to use a Linux box and its iptables capability.
+
+Below shows how to turn a Linux box into an HTTP re-director. In this case, all the HTTP traffic to `10.0.0.5:80` (redirector) will be forwarded to `10.0.0.2:80` (team server) :
+
+```csharp
+iptables -I INPUT -p tcp -m tcp --dport 80 -j ACCEPT
+iptables -t nat -A PREROUTING -p tcp --dport 80 -j DNAT --to-destination 10.0.0.2:80
+iptables -t nat -A POSTROUTING -j MASQUERADE
+iptables -I FORWARD -j ACCEPT
+iptables -P FORWARD ACCEPT
+sysctl net.ipv4.ip_forward=1
+```
+
+Checking that the iptables rules were created successfully:
+
+![](https://386337598-files.gitbook.io/~/files/v0/b/gitbook-legacy-files/o/assets%2F-LFEMnER3fywgFHoroYn%2F-LNgY1oeW_M7Ex2MKcvs%2F-LNgYwYFPYwWwAiHGET_%2Fredirectors-iptables.png?alt=media\&token=126e913f-8cd1-445c-bd13-52ead7aa2465)
+
+#### Testing iptables
+
+Let's simulate a simplified reverse shell from the victim system 10.0.0.11 to the attacking system 10.0.0.2 using our redirector system 10.0.0.5 as a proxy and inspect the traffic crossing over the wire - if the redirector was setup correctly, we should see that systems 10.0.0.11 and 10.0.0.2 will not be communicating directly - all the traffic will be flowing through the box at 10.0.0.5 and 10.0.0.2 (attacking system) will not be visible to the victim 10.0.0.11:
+
+![](https://386337598-files.gitbook.io/~/files/v0/b/gitbook-legacy-files/o/assets%2F-LFEMnER3fywgFHoroYn%2F-LNkyzj19g6GMswoEMQ_%2F-LNkzGUImVpeA331SSjv%2Fredirector.gif?alt=media\&token=bc78a317-36d7-4c92-9414-0b4e99dedb4f)
+
+Having a closer look at the traffic/conversations between the endpoints, we can clearly see that at no point the victim system 10.0.0.11 communicated directly with the attacking system 10.0.0.2 - all communications were flowing through the redirector host 10.0.0.5 as described earlier:
+
+![](https://386337598-files.gitbook.io/~/files/v0/b/gitbook-legacy-files/o/assets%2F-LFEMnER3fywgFHoroYn%2F-LNkyzj19g6GMswoEMQ_%2F-LNkzI3tcZ1AnNOrrw76%2Fredirector-conversations.png?alt=media\&token=9177c75b-e780-47a7-9e3d-89f1932f8e86)
+
+### HTTP Forwarding with SOCAT
+
+SOCAT is another tool that can be used to do the "dumb pipe" traffic forwarding. The environment in this exercise remains the same as in the previous scenario.
+
+Setting up an HTTP redirector with socat:
+
+```csharp
+socat TCP4-LISTEN:80,fork TCP4:10.0.0.2:80
+```
+
+![](https://386337598-files.gitbook.io/~/files/v0/b/gitbook-legacy-files/o/assets%2F-LFEMnER3fywgFHoroYn%2F-LNl6Sz7IudTkhjVlwDS%2F-LNlJ6fFg8E9Ie9vWVH_%2Fredirector-socat.gif?alt=media\&token=311c5bca-6293-4950-b0c7-01e213cb3d21)
+
+### References
+
+{% embed url="https://github.com/bluscreenofjeff/Red-Team-Infrastructure-Wiki#https" %}
+
+{% embed url="http://linux-training.be/networking/ch14.html" %}
+
+{% embed url="https://www.thegeekstuff.com/2011/01/iptables-fundamentals/" %}

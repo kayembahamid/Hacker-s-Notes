@@ -1,12 +1,10 @@
----
-description: Lateral Movment, Privilege Escalation
----
-
 # WMI + PowerShell Desired State Configuration Lateral Movement
+
+## WMI + PowerShell Desired State Configuration Lateral Movement
 
 This lab is simply a test of the lateral movement technique desrcibed by Matt Graeber [here](https://posts.specterops.io/abusing-powershell-desired-state-configuration-for-lateral-movement-ca42ddbe6f06).
 
-## Execution
+### Execution
 
 Below is the powershell script that allows an attacker to execute code on a remote machine via WMI. Note that the payload is defined in the variable `TestScript` on line 7. In our case, the payload is a rudimentary nc reverse shell (luckily, we know the victim has nc on their machine :):
 
@@ -92,14 +90,14 @@ if ($LCMClass -and $LCMClass.CimClassMethods['ResourceTest']) {
 
 The technique is captured in action in a gif below. On the left is the attacking system, on the right is the victim system and the window above the victim screen is another attacking system that is receiving the reverse shell:
 
-![](<../../.gitbook/assets/Peek 2018-11-01 21-48.gif>)
+![](https://386337598-files.gitbook.io/~/files/v0/b/gitbook-legacy-files/o/assets%2F-LFEMnER3fywgFHoroYn%2F-LQGFAj--pX7-W74tR7d%2F-LQGFlxEe-o3xIgGjdl0%2FPeek%202018-11-01%2021-48.gif?alt=media\&token=1eb369a2-0ce9-468c-991e-6672c6ef214c)
 
-## Observations
+### Observations
 
 Note the process ancestry and that our code was run with privileges of`NT AUTHORITY\SYSTEM`:
 
-![](<../../.gitbook/assets/Screenshot from 2018-11-01 22-00-51.png>)
+![](https://386337598-files.gitbook.io/~/files/v0/b/gitbook-legacy-files/o/assets%2F-LFEMnER3fywgFHoroYn%2F-LQGFAj--pX7-W74tR7d%2F-LQGHs-Mq8hbPr_TzWrw%2FScreenshot%20from%202018-11-01%2022-00-51.png?alt=media\&token=4f7b4f52-a452-479d-a3df-79a635e9b526)
 
-## References
+### References
 
 {% embed url="https://posts.specterops.io/abusing-powershell-desired-state-configuration-for-lateral-movement-ca42ddbe6f06" %}

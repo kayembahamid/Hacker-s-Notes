@@ -1,0 +1,30 @@
+# Persistence
+
+* [DLL Proxying for Persistence](dll-proxying-for-persistence.md)
+* [Schtask](schtask.md)
+* [Service Execution](service-execution.md)
+* [Sticky Keys](sticky-keys.md)
+* [Create Account](create-account.md)
+* [AddMonitor()](addmonitor.md)
+* [NetSh Helper DLL](netsh-helper-dll.md)
+* [Abusing Windows Managent Instrumentation](abusing-windows-managent-instrumentation/)
+* [Windows Logon Helper](windows-logon-helper.md)
+* [Hijacking Default File Extension](hijacking-default-file-extension.md)
+* [Persisting in svchost.exe with a Service DLL](persisting-in-svchost.exe-with-a-service-dll.md)
+* [Modifying .lnk Shortcuts](modifying-.lnk-shortcuts.md)
+* [Screensaver Hijack](screensaver-hijack.md)
+* [Application Shimming](application-shimming.md)
+* [BITS Jobs](bits-jobs.md)
+* [COM Hijacking](com-hijacking.md)
+* [SIP & Trust Provider Hijacking](sip-and-trust-provider-hijacking.md)
+* [Hijacking Time Providers](hijacking-time-providers.md)
+* [Installing Root Certificate](installing-root-certificate.md)
+* [Powershell Profile Persistence](powershell-profile-persistence.md)
+* [RID Hijacking](rid-hijacking.md)
+* [Word Library Add-Ins](word-library-add-ins.md)
+* [Office Templates](office-templates.md)
+
+Navigation:
+
+* Previous: [PreviousShadowMove: Lateral Movement by Duplicating Existing Sockets](https://www.ired.team/offensive-security/lateral-movement/shadowmove-lateral-movement-by-stealing-duplicating-existing-connected-sockets)
+* Next: [DLL Proxying for Persistence](dll-proxying-for-persistence.md)

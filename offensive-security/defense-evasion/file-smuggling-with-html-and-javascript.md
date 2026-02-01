@@ -1,8 +1,10 @@
 # File Smuggling with HTML and JavaScript
 
+## File Smuggling with HTML and JavaScript
+
 File smuggling is a technique that allows bypassing proxy blocks for certain file types that the user is trying to download. For example if a corporate proxy blocks `.exe` files from being downloaded via the browser, this is the technique you can use to smuggle those files through.
 
-## Weaponization
+### Weaponization
 
 First of, we get a base64 of the executable we want to smuggle past the proxy:
 
@@ -10,7 +12,7 @@ First of, we get a base64 of the executable we want to smuggle past the proxy:
 base64.exe C:\experiments\evil32.exe > .\evil.txt
 ```
 
-![](<../../.gitbook/assets/Screenshot from 2018-10-09 12-43-33.png>)
+![](https://386337598-files.gitbook.io/~/files/v0/b/gitbook-legacy-files/o/assets%2F-LFEMnER3fywgFHoroYn%2F-LONlC8mzY3gOCltGVeu%2F-LONcxe2OAZZ4pF8VgFU%2FScreenshot%20from%202018-10-09%2012-43-33.png?alt=media\&token=d1eff2fd-e49e-4ca0-b095-dd686192026d)
 
 Then we use this code and insert our base64 encoded payload into the variable `file`:
 
@@ -52,14 +54,13 @@ Then we use this code and insert our base64 encoded payload into the variable `f
 </html>
 ```
 
-## Execution
+### Execution
 
 If we open the HTML file in Internet Explorer (or Chrome), we get the Run/Download prompt and once it's run - the shell popped as expected:
 
-![](<../../.gitbook/assets/file-smuggling-rev-shell (1).gif>)
+![](https://386337598-files.gitbook.io/~/files/v0/b/gitbook-legacy-files/o/assets%2F-LFEMnER3fywgFHoroYn%2F-LONlC8mzY3gOCltGVeu%2F-LONcpflcIzoqdKUWYay%2Ffile-smuggling-rev-shell.gif?alt=media\&token=d0bf01d8-3a97-4914-ab38-606526d0970e)
 
-## References
+### References
 
 {% embed url="https://outflank.nl/blog/2018/08/14/html-smuggling-explained/" %}
 
-{% embed url="https://www.nccgroup.trust/uk/about-us/newsroom-and-events/blogs/2017/august/smuggling-hta-files-in-internet-exploreredge/" %}

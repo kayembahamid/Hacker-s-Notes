@@ -1,36 +1,34 @@
 # Phishing: Replacing Embedded Video with Bogus Payload
 
-## Weaponization
+## Phishing: Replacing Embedded Video with Bogus Payload
+
+### Weaponization
 
 Create a new Word document and go to Insert > Online Video:
 
-![](<../../../.gitbook/assets/Screenshot from 2019-03-02 13-52-10.png>)
+![](https://386337598-files.gitbook.io/~/files/v0/b/gitbook-legacy-files/o/assets%2F-LFEMnER3fywgFHoroYn%2F-LZyelpWsZynAOOYNRJv%2F-LZyfLZXawpMPi1MO2U9%2FScreenshot%20from%202019-03-02%2013-52-10.png?alt=media\&token=a1b496f2-4c48-4e76-b858-8a713b8452d6)
 
 Insert any video:
 
-![](<../../../.gitbook/assets/Screenshot from 2019-03-02 13-52-29.png>)
+![](https://386337598-files.gitbook.io/~/files/v0/b/gitbook-legacy-files/o/assets%2F-LFEMnER3fywgFHoroYn%2F-LZyelpWsZynAOOYNRJv%2F-LZyfPXjOH06L2dNb_MS%2FScreenshot%20from%202019-03-02%2013-52-29.png?alt=media\&token=921ed5f9-48ba-4d79-b60c-77ec9e7a83e6)
 
 Save the document:
 
-![](<../../../.gitbook/assets/Screenshot from 2019-03-02 13-53-34.png>)
+![](https://386337598-files.gitbook.io/~/files/v0/b/gitbook-legacy-files/o/assets%2F-LFEMnER3fywgFHoroYn%2F-LZyelpWsZynAOOYNRJv%2F-LZyg1EItZFkMZtB0y11%2FScreenshot%20from%202019-03-02%2013-53-34.png?alt=media\&token=736cf434-b2d3-4ff7-970e-c4be8798fcef)
 
 Rename .docx to .zip:
 
-![](<../../../.gitbook/assets/Screenshot from 2019-03-02 13-54-18.png>)
+![](https://386337598-files.gitbook.io/~/files/v0/b/gitbook-legacy-files/o/assets%2F-LFEMnER3fywgFHoroYn%2F-LZyelpWsZynAOOYNRJv%2F-LZyg3pm8_CB35SwXNbK%2FScreenshot%20from%202019-03-02%2013-54-18.png?alt=media\&token=d3645e77-6584-4c21-80c3-dbd708d0ce42)
 
 Open `document.xml` in any code editor:
 
-![](<../../../.gitbook/assets/Screenshot from 2019-03-02 13-55-09.png>)
+![](https://386337598-files.gitbook.io/~/files/v0/b/gitbook-legacy-files/o/assets%2F-LFEMnER3fywgFHoroYn%2F-LZyelpWsZynAOOYNRJv%2F-LZyg680KYmWhjWfTOtl%2FScreenshot%20from%202019-03-02%2013-55-09.png?alt=media\&token=39c76a91-4e68-4de6-8045-7ec155083711)
 
 Note the `embeddedHtml` attribute - this is currently where the youtube iframe is embedded:
 
-![](<../../../.gitbook/assets/Screenshot from 2019-03-02 15-18-53.png>)
+![](https://386337598-files.gitbook.io/~/files/v0/b/gitbook-legacy-files/o/assets%2F-LFEMnER3fywgFHoroYn%2F-LZyyMtQG7Os186HnNAh%2F-LZyzEVpFRwePG8s7Fe7%2FScreenshot%20from%202019-03-02%2015-18-53.png?alt=media\&token=2ab431f1-6a59-4dce-8357-8456270a208f)
 
 We will add our payload next inside the `embeddedHtml` attribute, just before the iframe markup starts. We will use the payload from the article:
-
-{% content-ref url="../../defense-evasion/file-smuggling-with-html-and-javascript.md" %}
-[file-smuggling-with-html-and-javascript.md](../../defense-evasion/file-smuggling-with-html-and-javascript.md)
-{% endcontent-ref %}
 
 ...which is almost the same as shown below:
 
@@ -73,33 +71,30 @@ We will add our payload next inside the `embeddedHtml` attribute, just before th
 
 Let's HTML encode the entire payload:
 
-![](<../../../.gitbook/assets/Screenshot from 2019-03-02 15-21-13.png>)
+![](https://386337598-files.gitbook.io/~/files/v0/b/gitbook-legacy-files/o/assets%2F-LFEMnER3fywgFHoroYn%2F-LZyyMtQG7Os186HnNAh%2F-LZyzjIXOTaxiXtQHS1T%2FScreenshot%20from%202019-03-02%2015-21-13.png?alt=media\&token=f9b8768a-a83c-4769-970c-a1df314917f2)
 
 Let's put the encoded payload at the very beginning of `embeddedHtml` attribute:
 
-![](<../../../.gitbook/assets/Screenshot from 2019-03-02 15-22-38.png>)
+![](https://386337598-files.gitbook.io/~/files/v0/b/gitbook-legacy-files/o/assets%2F-LFEMnER3fywgFHoroYn%2F-LZyyMtQG7Os186HnNAh%2F-LZz-1zsjxZM_I7xNkgr%2FScreenshot%20from%202019-03-02%2015-22-38.png?alt=media\&token=26a2810b-e597-4915-a094-6cb6c631b550)
 
 Zip up all the files again and rename the archive back to `.docx`:
 
-![](<../../../.gitbook/assets/Screenshot from 2019-03-02 15-23-28.png>)
+![](https://386337598-files.gitbook.io/~/files/v0/b/gitbook-legacy-files/o/assets%2F-LFEMnER3fywgFHoroYn%2F-LZyyMtQG7Os186HnNAh%2F-LZz-F3JQ4lgjcyFwRDn%2FScreenshot%20from%202019-03-02%2015-23-28.png?alt=media\&token=29114c43-d3dc-442a-96e7-1986203426bc)
 
-## Execution
+### Execution
 
 Open the newly backdoored document and play the video:
 
-![](<../../../.gitbook/assets/Screenshot from 2019-03-02 15-24-15.png>)
+![](https://386337598-files.gitbook.io/~/files/v0/b/gitbook-legacy-files/o/assets%2F-LFEMnER3fywgFHoroYn%2F-LZyyMtQG7Os186HnNAh%2F-LZz-QKjgB28ZmPI2JHK%2FScreenshot%20from%202019-03-02%2015-24-15.png?alt=media\&token=bedcd130-e2ce-4675-b479-b4c720425bcc)
 
 At this point according to [https://blog.cymulate.com/abusing-microsoft-office-online-video](https://blog.cymulate.com/abusing-microsoft-office-online-video), the payload download prompt should have been presented, but for some reason this did not happen for me:
 
-![https://blog.cymulate.com/abusing-microsoft-office-online-video](<../../../.gitbook/assets/Screenshot from 2019-03-02 15-54-20.png>)
+![https://blog.cymulate.com/abusing-microsoft-office-online-video](https://386337598-files.gitbook.io/~/files/v0/b/gitbook-legacy-files/o/assets%2F-LFEMnER3fywgFHoroYn%2F-LZz591qAOD-NI12yFjK%2F-LZz6JfslhEWy6_9owjc%2FScreenshot%20from%202019-03-02%2015-54-20.png?alt=media\&token=1fa41da7-f46b-4315-992f-ea0a43b389a2)
 
 If you were able to replicate this technique and see what I missed, I would appreciate any feedback.
 
-## References
+### References
 
 {% embed url="https://blog.cymulate.com/abusing-microsoft-office-online-video" %}
 
 {% embed url="https://github.com/rvrsh3ll/Word-Doc-Video-Embed-EXE-POC" %}
-
-
-

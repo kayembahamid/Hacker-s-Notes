@@ -1,0 +1,18 @@
+# Code Execution
+
+* [regsvr32](regsvr32.md)
+* [MSHTA](mshta.md)
+* [Control Panel Item](control-panel-item.md)
+* [Executing Code as a Control Panel Item through an Exported Cplapplet Function](executing-code-as-a-control-panel-item-through-an-exported-cplapplet-function.md)
+* [Code Execution through Control Panel Add-ins](code-execution-through-control-panel-add-ins.md)
+* [CMSTP](cmstp.md)
+* [InstallUtil](installutil.md)
+* [Using MSBuild to Execute Shellcode in C#](using-msbuild-to-execute-shellcode-in-c.md)
+* [Forfiles Indirect Command Execution](forfiles-indirect-command-execution.md)
+* [Application Whitelisting Bypass with WMIC and XSL](application-whitelisting-bypass-with-wmic-and-xsl.md)
+* [Powershell Without Powershell.exe](powershell-without-powershell.exe.md)
+* [Powershell Constrained Language Mode Bypass](powershell-constrained-language-mode-bypass.md)
+* [Forcing Iexplore.exe to Load a Malicious DLL via COM Abuse](forcing-iexplore.exe-to-load-a-malicious-dll-via-com-abuse.md)
+* [pubprn.vbs Signed Script Code Execution](pubprn.vbs-signed-script-code-execution.md)
+* [PreviousNetNTLMv2 hash stealing using Outlook](https://www.ired.team/offensive-security/initial-access/netntlmv2-hash-stealing-using-outlook)
+* [Nextregsvr32](regsvr32.md)
