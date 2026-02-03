@@ -460,13 +460,14 @@
 
 ## Tools
 
-* [Burp Suite | Pentest Book](tools/burp-suite-or-pentest-book.md)
-* [Password cracking](tools/password-cracking.md)
-* [LLM/AI/ML/prompt testing | Pentest Book](tools/llm-ai-ml-prompt-testing-or-pentest-book.md)
-* [Code review | Pentest Book](tools/code-review-or-pentest-book.md)
-* [Pentesting Web checklist | Pentest Book](tools/pentesting-web-checklist-or-pentest-book.md)
-* [Internal Pentest | Pentest Book](tools/internal-pentest-or-pentest-book.md)
-* [Random | Pentest Book](tools/random-or-pentest-book.md)
-* [Master assessment mindmaps | Pentest Book](tools/master-assessment-mindmaps-or-pentest-book.md)
-* [BugBounty | Pentest Book](tools/bugbounty-or-pentest-book.md)
+* [Pentesting Web checklist](tools/pentesting-web-checklist/README.md)
+  * [Methodology](tools/pentesting-web-checklist/methodology.md)
+* [Burp Suite](tools/burp-suite.md)
+* [BugBounty](tools/bugbounty.md)
 * [Red Team Tools](tools/red-team-tools.md)
+* [Password cracking](tools/password-cracking.md)
+* [LLM/AI/ML/prompt testing](tools/llm-ai-ml-prompt-testing.md)
+* [Code review](tools/code-review.md)
+* [Internal Pentest](tools/internal-pentest.md)
+* [Random](tools/random.md)
+* [Master assessment mindmaps](tools/master-assessment-mindmaps.md)
