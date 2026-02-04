@@ -1,6 +1,61 @@
+---
+description: >-
+  Content discovery is a significant part of web application penetration testing
+  or bug bounty hunting. This process involves identifying and mapping out
+  components, endpoints, directories, functionalit
+---
+
 # Webs recon
 
-## Webs recon
+Things we want to look at are:
+
+* Subdomains
+* Technology stack
+* Directories and endpoints
+* Parameters
+* Functionality
+* APIs
+* JavaScript / fontend analysis
+* Other open ports / services
+
+### Checklist
+
+**Web Server**
+
+* [ ] What is the server running?
+  * [ ] Operating system: Linux or Windows?
+  * [ ] Web server: Apache or Nginx? Etc
+* [ ] Can we identify the version of the Web Server?
+* [ ] Are there any subdomains?
+
+**Common files**
+
+* [ ] robots.txt
+* [ ] sitemap.xml
+* [ ] .htaccess
+* [ ] security.txt
+* [ ] manifest.json
+* [ ] browserconfig.xml
+* [ ] etc
+
+**Frontend checks**
+
+* [ ] Inspect the page source for frontend scripts & information
+* [ ] Is there any sensitive information in the frontend?
+* [ ] Are there links and other things in the frontend that aren't used?
+
+**Entry Points**
+
+* [ ] What endpoints exist
+* [ ] What HTTP methods are used
+* [ ] What parameters are used
+* [ ] Fuzz for hidden endpoints, files, parameters, methods, etc
+
+**Map Application Architecture**
+
+* [ ] Step through the entire application
+
+
 
 ### Resolution
 

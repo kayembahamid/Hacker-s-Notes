@@ -1,6 +1,74 @@
+---
+description: >-
+  NoSQL injection is where an attacker can manipulate the queries made to a
+  NoSQL database through user input.
+---
+
 # NoSQL (MongoDB, CouchDB)
 
+## NoSQL injection
+
+**A simple example:**
+
+* A vulnerable web application has the endpoint /search?user={username}
+* When a request is made, the application queries a NoSQL database (e.g., MongoDB) like this: `db.users.find({username: {$eq: username}})`
+* If an attacker inserts a payload into {username} such as {"$ne": ""}, it may modify the query to retrieve all users.
+* The vulnerable application sends this query to the database, potentially leaking all usernames.
+
+It's important to note that payloads may vary depending on the database, query, and application. NoSQL injection can lead to:
+
+* Sensitive data exposure
+* Data manipulation
+* Denial of service
+
+**Other learning resources:**
+
+**Writeups:**
+
+_Have a good writeup & want to share it here? Drop me a message on_ [_LinkedIn._ ](https://www.linkedin.com/in/kayemba-h-99082a96/)
+
+### Checklist:
+
+* [ ] What is the technology stack you're attacking?
+* [ ] What NoSQL DB is being used (MongoDB, CouchDB, etc.)?
+* [ ] Verify injection points:
+  * [ ] URL parameters
+  * [ ] Form fields
+  * [ ] HTTP headers (e.g., cookies, etc.)
+  * [ ] Out-of-band (data retrieved from a third party)
+* [ ] Test with different operators: $eq, $ne, $gt, $gte, $lt, $lte, etc.
+* [ ] Can you trigger different responses?
+* [ ] Test for login bypass: {"$ne": ""}
+* [ ] Test for blind NoSQLi
+* [ ] Test for errors
+* [ ] Test for conditional responses
+* [ ] Test for conditional errors
+* [ ] Test for time delays
+* [ ] Test for out-of-band interactions
+* [ ] Is there a blocklist?
+  * [ ] Can you bypass the blocklist?
+
+### Exploitation
+
+```
+# basic login bypass
+{"username": "anyname", "password": {"$ne": ""}}
+```
+
+```
+# retrieve data
+{"$where": "this.someField == 'someValue'"}
+```
+
+```
+# blind
+{"someField": {"$regex": "^someValue"}}
+```
+
+### References & Resources
+
 ```bash
+
 # Tools
 ## Mongobleed https://github.com/joe-desimone/mongobleed
 # https://github.com/codingo/NoSQLMap

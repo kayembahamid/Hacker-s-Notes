@@ -1,6 +1,23 @@
+---
+description: >-
+  Subdomain discovery is the process of finding what subdomains exist given a
+  domain name. For example, the domain tcm-sec.com might have the subdomains
+  dev.hamcodes.com and blog.hamcodes.com.
+---
+
 # Subdomain Enum
 
-## Subdomain Enum
+#### Wordlists
+
+Assetnote [https://wordlists-cdn.assetnote.io/data/manual/best-dns-wordlist.txt](https://wordlists-cdn.assetnote.io/data/manual/best-dns-wordlist.txt)
+
+Seclists [/Seclists/Discovery/DNS/\<multiple lists here>](https://github.com/danielmiessler/SecLists/tree/master/Discovery/DNS)
+
+### Passive discovery
+
+* Sublistr
+* Google
+* [https://crt.sh/](https://crt.sh/)
 
 ### Passive sources
 

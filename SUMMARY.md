@@ -3,6 +3,9 @@
 ## Pentesting Cheatsheets
 
 * [Pentesting Cheatsheets](README.md)
+* [Pentesting Web checklist](pentesting-cheatsheets/pentesting-web-checklist/README.md)
+  * [Methodology](pentesting-cheatsheets/pentesting-web-checklist/methodology.md)
+  * [Web Security Testing Guide Checklist](pentesting-cheatsheets/pentesting-web-checklist/web-security-testing-guide-checklist.md)
 * [SQL Injection & XSS Playground](pentesting-cheatsheets/sql-injection-and-xss-playground.md)
 
 ## Active Directory&#x20;
@@ -296,7 +299,8 @@
   * [Crawl/Fuzz](enumeration/web-attacks/crawl-fuzz.md)
   * [LFI/RFI](enumeration/web-attacks/lfi-rfi.md)
   * [File upload](enumeration/web-attacks/file-upload.md)
-  * [SQLi](enumeration/web-attacks/sqli.md)
+  * [SQLi](enumeration/web-attacks/sqli/README.md)
+    * [SQLi lab setup & writeups](enumeration/web-attacks/sqli/sqli-lab-setup-and-writeups.md)
   * [SSRF](enumeration/web-attacks/ssrf.md)
   * [Open redirects](enumeration/web-attacks/open-redirects.md)
   * [XSS](enumeration/web-attacks/xss.md)
@@ -460,9 +464,6 @@
 
 ## Tools
 
-* [Pentesting Web checklist](tools/pentesting-web-checklist/README.md)
-  * [Methodology](tools/pentesting-web-checklist/methodology.md)
-  * [Web Security Testing Guide Checklist](tools/pentesting-web-checklist/web-security-testing-guide-checklist.md)
 * [Burp Suite](tools/burp-suite.md)
 * [BugBounty](tools/bugbounty.md)
 * [Red Team Tools](tools/red-team-tools.md)

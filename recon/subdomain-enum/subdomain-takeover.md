@@ -1,6 +1,15 @@
 # Subdomain Takeover
 
-## Subdomain Takeover
+## Active discovery
+
+* Sublistr
+* DNSRecon
+* Amass
+* Ffuf
+
+```
+ffuf -u <target> -w /path/to/wordlist.txt -H "Host: FUZZ.target.com" -fs <size-filter>
+```
 
 ### Explanation
 
