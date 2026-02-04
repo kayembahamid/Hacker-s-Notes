@@ -462,6 +462,7 @@
 
 * [Pentesting Web checklist](tools/pentesting-web-checklist/README.md)
   * [Methodology](tools/pentesting-web-checklist/methodology.md)
+  * [Web Security Testing Guide Checklist](tools/pentesting-web-checklist/web-security-testing-guide-checklist.md)
 * [Burp Suite](tools/burp-suite.md)
 * [BugBounty](tools/bugbounty.md)
 * [Red Team Tools](tools/red-team-tools.md)
