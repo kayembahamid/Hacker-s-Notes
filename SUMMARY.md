@@ -1,8 +1,10 @@
 # Table of contents
 
+* [THE HACKER'S NOTES](README.md)
+
 ## Pentesting Cheatsheets
 
-* [Pentesting Cheatsheets](README.md)
+* [Pentesting Cheatsheets](<README (1).md>)
 * [Pentesting Web checklist](pentesting-cheatsheets/pentesting-web-checklist/README.md)
   * [Methodology](pentesting-cheatsheets/pentesting-web-checklist/methodology.md)
   * [Web Security Testing Guide Checklist](pentesting-cheatsheets/pentesting-web-checklist/web-security-testing-guide-checklist.md)
