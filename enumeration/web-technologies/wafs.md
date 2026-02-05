@@ -1,5 +1,41 @@
 # WAFs
 
+## WAF Bypasses
+
+**Encoding Evasion**: Use URL, Unicode, Base64, or other encodings to disguise payloads.
+
+**HTTP Parameter Pollution**: Manipulate parameters to exploit the way the WAF processes multi-instance parameters. (One of my favourite techniques!)
+
+**Session Splicing**: Divide the attack into multiple requests or sessions to disrupt the WAF's ability to correlate the events.
+
+**Verb Tampering**: Change the HTTP method (GET, POST, HEAD, etc.) to an unconventional one that the WAF might not inspect.
+
+**Path Obfuscation**: Include irrelevant path information that gets ignored by the server but confuses the WAF (like using directory traversal techniques).
+
+**Query String Manipulation**: Alter the query string with special characters or payloads that might be overlooked by the WAF.
+
+**Header Manipulation**: Modify HTTP headers such as `User-Agent`, `Referer`, or custom headers in ways that are not expected.
+
+**Cookie Poisoning**: Inject payloads into cookie values which may not be inspected or properly sanitized by the WAF.
+
+**Content-Type Evasion**: Use unusual or mismatched content-types in the HTTP header to bypass checks that are content-type specific.
+
+**Extension Manipulation**: Changing file extensions or using obscure ones to evade filters that inspect file names.
+
+**Protocol-Level Evasion**: Utilize discrepancies in protocol implementations (like ambiguous requests) that may be differently interpreted by the WAF and the target web server.
+
+**Attack Obfuscation with Legitimate Requests**: Mix in legitimate traffic with the attack traffic to reduce the anomaly score that might otherwise trigger the WAF.
+
+**Bypassing with JavaScript**: Use JavaScript to construct the final payload in the client-side browser, which may not be executed or recognized by the WAF.
+
+**Using Comment Injection**: Place comments within SQL statements or scripts to disrupt signature detection.
+
+**Utilizing Server-Side Request Forgery (SSRF)**: Exploit the server's functionality to make requests that bypass the WAF's rules.
+
+**Timing Attacks**: Execute actions with delays, leveraging the fact that some WAFs have a time window for rule execution.
+
+**Ruleset Flaws**: Exploit known weaknesses in the rulesets employed by popular WAFs, which are sometimes documented by security researchers.
+
 {% embed url="https://waf-bypass.com/" %}
 
 bash usage example:

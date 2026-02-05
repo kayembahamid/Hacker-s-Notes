@@ -1,6 +1,57 @@
 # SSRF
 
-## SSRF
+## Server-side request forgery (SSRF)
+
+### What is it?
+
+Server-Side Request Forgery (SSRF) is a vulnerability that allows an attacker to induce the server-side application to make HTTP requests to an arbitrary domain of the attacker's choosing. It can be used by an attacker to interact with internal systems, possibly bypassing firewalls or accessing unauthorized data.
+
+**A simple example**
+
+A vulnerable web application uses a parameter to retrieve an image from a URL, i.e., `/loadImage?url={imageURL}`. An attacker can potentially change the `{imageURL}` to point to internal resources that should not be exposed, such as `http://localhost/admin` or `http://internal-service/api/secrets`.
+
+The impact of an SSRF vulnerability includes:
+
+* Access to internal services and data
+* Remote code execution
+* Denial of Service (DoS)
+
+**Other learning resources:**
+
+* PortSwigger: [https://portswigger.net/web-security/ssrf](https://portswigger.net/web-security/ssrf)
+* Swisskyrepo: [https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Server%20Side%20Request%20Forgery](https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Server%20Side%20Request%20Forgery)
+
+### Checklist
+
+* [ ] Identify all points where the application makes a server-side HTTP request
+  * [ ] URL parameters
+  * [ ] Form fields
+  * [ ] HTTP headers
+* [ ] Examine the application's handling of URL redirection
+* [ ] Test different URI schemes http, https, file, ftp, etc.
+* [ ] Does the application accept IP addresses (e.g., 127.0.0.1) or localhost as the hostname?
+* [ ] Test for internal network interactions
+* [ ] Can you map out the internal network infrastructure (port scanning, banner grabbing)?
+* [ ] Test for remote file inclusion
+* [ ] Test for cloud metadata exposure (relevant for cloud-based services) Amazon AWS, Google Cloud, etc.
+* [ ] Is there a blocklist?
+* [ ] Can you bypass the blocklist?
+* [ ] Encoding Hostname obfuscation
+* [ ] Alternative IP notation (e.g. 127.0.0.1 in hex is 0x7f.0x0.0x0.0x1)
+  * [ ] Hex, Hex with extra 0s, Octal, two numbers, three numbers, etc
+
+### Exploitation
+
+```shellscript
+# Basic internal interaction
+http://localhost/admin
+
+# Using alternative IP notation (for 127.0.0.1)
+http://2130706433 
+
+# Cloud metadata exposure (AWS)
+http://169.254.169.254/latest/meta-data/
+```
 
 ### Tools
 

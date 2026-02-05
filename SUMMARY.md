@@ -327,6 +327,8 @@
   * [Command Injection](enumeration/web-attacks/command-injection.md)
   * [Deserialization](enumeration/web-attacks/deserialization.md)
   * [DNS rebinding](enumeration/web-attacks/dns-rebinding.md)
+  * [Vulnerable components](enumeration/web-attacks/vulnerable-components.md)
+  * [Rate limiting](enumeration/web-attacks/rate-limiting.md)
 * [Web Technologies](enumeration/web-technologies/README.md)
   * [APIs](enumeration/web-technologies/apis.md)
   * [JS](enumeration/web-technologies/js.md)
@@ -390,6 +392,10 @@
   * [AD s](post-exploitation/windows/ad-s/README.md)
     * [Kerberos](post-exploitation/windows/ad-s/kerberos.md)
   * [PS tips & tricks](post-exploitation/windows/ps-tips-and-tricks.md)
+
+## CODE REVIEW
+
+* [Sinks](code-review/sinks.md)
 
 ## AI HACKING
 
@@ -473,3 +479,4 @@
 * [Internal Pentest](tools/internal-pentest.md)
 * [Random](tools/random.md)
 * [Master assessment mindmaps](tools/master-assessment-mindmaps.md)
+* [Writeups](tools/writeups.md)
