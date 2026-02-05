@@ -37,3 +37,5 @@ You’ll find me here:
 {% embed url="https://www.youtube.com/channel/UCVmtKVeEKvw6jYT-YtXBQ6g?sub_confirmation=1" %}
 
 If you’re here to actually do the work and not just read about it, you’re good.
+
+<figure><img src=".gitbook/assets/Hamcodes.png" alt=""><figcaption></figcaption></figure>
