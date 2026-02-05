@@ -1,6 +1,128 @@
 # OAuth
 
-## OAuth
+## Authentication
+
+### What is it?
+
+Authentication is the process by which a system confirms the identity of a user or application. It's essentially all about **who you are**.
+
+Targeting authentication mechanisms allow us to to impersonate users, admins, or systems and gain unauthorized access. Often, we look to attack logic issues and lack of brute-force protection.
+
+Common targets in authentication attacks include:
+
+* Passwords or passphrases
+* Multi-Factor Authentication (MFA)
+* Session tokens
+* Cookies
+* Recovery questions and answers
+
+For more details on specific authentication attack techniques, see the relevant child pages.
+
+## Attacking password-based authentication
+
+### What is it?
+
+Password-based authentication generally allows to register an account and set a password, or sometimes an account will be assigned to them by an administrator. Password-based authentication tends to be suseptible to brute-force attacks, account lockouts and credential stuffing attacks.
+
+**A simple example**
+
+* A vulnerable web application allows users to sign up and set a password.
+* After 10 failed login attempts, an account is locked.
+* If an attacker uses 9 common passwords against many user accounts, they will gain access to ones that chose weak or common passwords.
+
+Broken authentication can often lead to:
+
+* Account takeover
+* Sensitive data exposure
+
+**Other learning resources:**
+
+* PortSwigger: [https://portswigger.net/web-security/authentication](https://portswigger.net/web-security/authentication)
+
+**Writeups:**
+
+_Have a good writeup & want to share it here? Drop me a message on LinkedIn._
+
+### Checklist
+
+* [ ] Can we enumerate user accounts?
+  * [ ] Registration page
+  * [ ] Login page
+  * [ ] Password reset page
+* [ ] Is there any brute-force protection?
+  * [ ] Check for account lockouts
+  * [ ] Check for rate limiting
+  * [ ] Check for CAPTCHA
+  * [ ] Check for MFA
+* [ ] What is the password policy?
+  * [ ] Check the strength requirements
+  * [ ] Is the password stored securely? (E.g. if we reset, will it send us the cleartext password)
+  * [ ] Is the password reset token sufficiently unique?
+* [ ] Are credentials predictable?
+  * [ ] Check for default credentials
+  * [ ] Check for username conventions (E.g. firstname.lastname)
+* [ ] Is autocomplete enabled on password fields?
+* [ ] Check the password reset functionality
+  * [ ] Knowledge-based questions
+  * [ ] Token leakage via Referrer
+  * [ ] Token predictability
+* [ ] Is authentication happening client-side?
+* [ ] Are there any backups or leaked files with creds?
+* [ ] Is there remember me or auto login functionality?
+  * [ ] Are the tokens for this predictable?
+  * [ ] How long does the token remain valid?
+* [ ] Are tokens or credentials passed via the URL?
+* [ ] Are there CSRF tokens?
+
+## Attacking MFA
+
+### What is it?
+
+Multi-Factor Authentication (MFA) is a method of confirming a user's identity by using multiple pieces of evidence (factors), typically something they know (like a password), something they have (like a physical token or a mobile device), and something they are (like biometric data).
+
+**A simple example**
+
+A web application requests a password (first factor - something the user knows), then a one-time password sent to a mobile device (second factor - something the user has). An attacker could attempt to bypass MFA by stealing both the user's password and the OTP, or by exploiting vulnerabilities in the MFA implementation.
+
+Common MFA bypass techniques can include:
+
+* Phishing attacks to collect both factors
+* Exploiting insecure backup/recovery methods
+* Man-in-the-middle attacks
+* Exploiting implementation weaknesses
+
+**Other learning resources:**
+
+* OWASP: [https://owasp.org/www-community/controls/Multi-Factor\\\\\_Authentication](https://owasp.org/www-community/controls/Multi-Factor/_Authentication)
+* Duo Security: [https://duo.com/docs/duosec-v1](https://duo.com/docs/duosec-v1)
+* Google Authenticator: [https://github.com/google/google-authenticator](https://github.com/google/google-authenticator)
+
+### Checklist
+
+* [ ] Understand the MFA implementation
+  * [ ] What factors are used?
+  * [ ] What backup/recovery methods exist?
+  * [ ] Is there a fall-back option to less secure methods?
+* [ ] Go through the MFA processes
+  * [ ] Initial enrollment process
+  * [ ] Login process with MFA
+  * [ ] Recovery/Backup process
+  * [ ] Deactivation process
+* [ ] Are there any implementation weaknesses?
+  * [ ] Does the application allow "remember me" functionality?
+  * [ ] Can OTPs be predicted or intercepted?
+  * [ ] Are session tokens securely handled?
+  * [ ] Is there a secure lockout mechanism after multiple failed attempts?
+* [ ] Can we bypass MFA?
+  * [ ] Can we bruteforce the token?
+  * [ ] Exploiting insecure backup/recovery methods
+  * [ ] Can a new device be added without proper verification?
+  * [ ] Is there any notification on registration of a new device?
+  * [ ] Can the notification be suppressed?
+* [ ] Are there any backdoors?
+  * [ ] Is there an alternative login flow that bypasses MFA?
+  * [ ] Is there a less secure service that doesn't require MFA but grants similar access?
+  * [ ] Are there any APIs or resources that do not enforce MFA?
 
 ### Explanation
 

