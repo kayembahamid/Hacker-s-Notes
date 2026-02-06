@@ -53,6 +53,7 @@
   * [Powershell Empire 101](offensive-security/red-team-infrastructure/powershell-empire-101.md)
   * [Spiderfoot 101 with Kali using Docker](offensive-security/red-team-infrastructure/spiderfoot-101-with-kali-using-docker.md)
 * [Initial Access](offensive-security/initial-access/README.md)
+  * [Phishing Methodology](offensive-security/initial-access/phishing-methodology.md)
   * [Password Spraying Outlook Web Access: Remote Shell](offensive-security/initial-access/password-spraying-outlook-web-access-remote-shell.md)
   * [phishing-with-ms-office](offensive-security/initial-access/phishing-with-ms-office/README.md)
     * [Phishing: XLM / Macro 4.0](offensive-security/initial-access/phishing-with-ms-office/phishing-xlm-macro-4.0.md)
